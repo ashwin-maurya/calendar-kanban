@@ -1,8 +1,8 @@
 "use client";
 
 import { useDrop } from "react-dnd";
-import { useState, useEffect } from "react";
-import { format, addDays, subDays } from "date-fns";
+import type { DropTargetMonitor } from "react-dnd";
+import { format } from "date-fns";
 import EventCard from "./EventCard";
 import { Event, EventsByDate } from "@/lib/types";
 
@@ -10,7 +10,6 @@ interface DayColumnProps {
   date: Date;
   events: Event[];
   setEvents: (events: EventsByDate) => void;
-  setCurrentDate: (date: Date) => void;
   setIsDragging: (dragging: boolean) => void;
 }
 
@@ -18,19 +17,15 @@ export default function DayColumn({
   date,
   events,
   setEvents,
-  setCurrentDate,
   setIsDragging,
 }: DayColumnProps) {
-  const [traverseTimer, setTraverseTimer] = useState<NodeJS.Timeout | null>(
-    null
-  );
-
   const moveEvent = (eventId: string, fromDate: string, toDate: string) => {
-    setEvents((prev: any) => {
-      const updated = { ...prev };
-      const event = updated[fromDate].find((e) => e.id === eventId);
+    setEvents((prev: EventsByDate) => {
+      const updated: { [key: string]: Event[] } = { ...prev };
+      const event = updated[fromDate]?.find((e) => e.id === eventId);
+      if (!event) return prev;
       updated[fromDate] = updated[fromDate].filter((e) => e.id !== eventId);
-      updated[toDate] = [...(updated[toDate] || []), event!].sort((a, b) =>
+      updated[toDate] = [...(updated[toDate] || []), event].sort((a, b) =>
         a.time.localeCompare(b.time)
       );
       if (!updated[fromDate].length) delete updated[fromDate];
@@ -41,60 +36,46 @@ export default function DayColumn({
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "EVENT",
     drop: (item: { id: string; fromDate: string }) => {
-      if (traverseTimer) clearTimeout(traverseTimer);
       const toDate = format(date, "yyyy-MM-dd");
       if (item.fromDate !== toDate) {
         moveEvent(item.id, item.fromDate, toDate);
       }
     },
-    hover: (item: { id: string; fromDate: string }, monitor) => {
-      const offset = monitor.getClientOffset();
-      if (!offset) return;
-
-      const screenWidth = window.innerWidth;
-      const edgeThreshold = screenWidth * 0.1; // 10% of screen width
-      const isNearLeft = offset.x < edgeThreshold;
-      const isNearRight = offset.x > screenWidth - edgeThreshold;
-
-      if ((isNearLeft || isNearRight) && !traverseTimer) {
-        setTraverseTimer(
-          setTimeout(() => {
-            setCurrentDate(isNearLeft ? subDays(date, 1) : addDays(date, 1));
-            setTraverseTimer(null);
-          }, 1500) // 1.5s edge traversal
-        );
-      } else if (!isNearLeft && !isNearRight && traverseTimer) {
-        clearTimeout(traverseTimer);
-        setTraverseTimer(null);
-      }
-    },
-    collect: (monitor) => ({
+    collect: (monitor: DropTargetMonitor) => ({
       isOver: !!monitor.isOver(),
     }),
   }));
 
-  useEffect(() => {
-    return () => {
-      if (traverseTimer) clearTimeout(traverseTimer);
-    };
-  }, [traverseTimer]);
-
   return (
     <div
       ref={drop}
-      className={`border p-2 bg-gray-50 rounded min-h-[200px] w-full md:w-auto ${
-        isOver ? "bg-blue-100" : ""
+      data-date={format(date, "yyyy-MM-dd")}
+      className={`flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200 transition-all duration-300 ${
+        isOver ? "ring-2 ring-blue-400" : ""
       }`}
     >
-      <h2 className="text-sm font-medium">{format(date, "EEE, MMM d")}</h2>
-      {events.map((event) => (
-        <EventCard
-          key={event.id}
-          event={event}
-          date={date}
-          setIsDragging={setIsDragging}
-        />
-      ))}
+      <div className="p-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+        <h2 className="text-sm font-semibold text-gray-700">
+          {format(date, "EEE")}
+        </h2>
+        <p className="text-xs text-gray-500">{format(date, "MMM d")}</p>
+      </div>
+      <div className="flex-1 p-2 min-h-[200px] overflow-y-auto">
+        {events.length === 0 ? (
+          <div className="h-full flex items-center justify-center">
+            <p className="text-xs text-gray-400">No events</p>
+          </div>
+        ) : (
+          events.map((event) => (
+            <EventCard
+              key={event.id}
+              event={event}
+              date={date}
+              setIsDragging={setIsDragging}
+            />
+          ))
+        )}
+      </div>
     </div>
   );
 }
