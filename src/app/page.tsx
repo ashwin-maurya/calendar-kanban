@@ -21,23 +21,35 @@ import {
 import { AnimatePresence } from "framer-motion";
 
 export default function Home() {
-  const [currentDate, setCurrentDate] = useState(new Date("2025-03-31"));
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<EventsByDate>(eventsData);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [showLoading, setShowLoading] = useState<"left" | "right" | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const mainContentRef = useRef<HTMLDivElement>(null);
 
-  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () =>
-      !isDragging && !selectedEvent && setCurrentDate(addDays(currentDate, 1)),
-    onSwipedRight: () =>
-      !isDragging && !selectedEvent && setCurrentDate(subDays(currentDate, 1)),
+    onSwipedLeft: (e) => {
+      if (mainContentRef.current?.contains(e.event.target as Node)) {
+        !isDragging &&
+          !selectedEvent &&
+          setCurrentDate(addDays(currentDate, 1));
+      }
+    },
+    onSwipedRight: (e) => {
+      if (mainContentRef.current?.contains(e.event.target as Node)) {
+        !isDragging &&
+          !selectedEvent &&
+          setCurrentDate(subDays(currentDate, 1));
+      }
+    },
     trackTouch: true,
     preventScrollOnSwipe: true,
+    delta: 50,
   });
 
   const [isMobile, setIsMobile] = useState(false);
@@ -163,10 +175,13 @@ export default function Home() {
       />
       <main
         {...(isMobile ? swipeHandlers : {})}
+        ref={mainContentRef}
         className="mx-auto h-[calc(100vh)] py-6 overflow-hidden"
       >
         <AnimatePresence>
-          {showLoading && <LoadingIndicator direction={showLoading} />}
+          {showLoading && (
+            <LoadingIndicator isMobile={isMobile} direction={showLoading} />
+          )}
         </AnimatePresence>
         <div className="relative flex h-[calc(100vh-12rem)] overflow-hidden">
           <div
@@ -182,7 +197,7 @@ export default function Home() {
           <div
             className={`${
               isMobile ? "w-[80%]" : "w-[80%]"
-            } grid grid-cols-1 md:grid-cols-7 gap-6 overflow-hidden`}
+            } grid grid-cols-1 md:grid-cols-7 gap-6 overflow-hidden p-1 md:py-2`}
           >
             {(isMobile ? [currentDate] : days).map((day) => (
               <DayColumn
