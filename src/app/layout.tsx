@@ -1,14 +1,9 @@
 "use client";
 
-import { DndProvider } from "react-dnd";
+import { DndProvider } from "react-dnd/dist/core";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import "./globals.css";
 import { useState, useEffect } from "react";
-
-// export const metadata = {
-//   title: "Calendar Kanban Board",
-//   description: "A draggable calendar experience",
-// };
 
 export default function RootLayout({
   children,
