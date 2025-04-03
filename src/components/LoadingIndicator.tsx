@@ -30,7 +30,7 @@ export default function LoadingIndicator({
               cy="50"
               r={radius}
               fill="none"
-              stroke="#E5E7EB"
+              stroke="#a8e063"
               strokeWidth={isMobile ? 10 : 8}
             />
           </svg>
@@ -47,7 +47,7 @@ export default function LoadingIndicator({
               cy="50"
               r={radius}
               fill="none"
-              stroke="#3B82F6"
+              stroke="#56ab2f"
               strokeWidth={isMobile ? 10 : 6}
               strokeDasharray={circumference}
               initial={{

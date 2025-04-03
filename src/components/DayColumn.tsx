@@ -63,11 +63,11 @@ export default function DayColumn({
     <div
       ref={dropRef}
       data-date={format(date, "yyyy-MM-dd")}
-      className={`flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200 transition-all duration-300 w-full ${
-        isOver ? "ring-2 ring-blue-400" : ""
+      className={`flex flex-col h-full bg-white rounded-lg shadow-sm border border-[#E3F5D9] transition-all duration-300 w-full ${
+        isOver ? "ring-2 ring-[#56ab2f]" : ""
       }`}
     >
-      <div className="p-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+      <div className="p-3 border-b border-[#E3F5D9] rounded-t-lg bg-[#E3F5D9]">
         <h2 className="text-sm font-semibold text-gray-700">
           {format(date, "EEE")}
         </h2>
@@ -79,9 +79,9 @@ export default function DayColumn({
             <p className="text-xs text-gray-400">No events</p>
           </div>
         ) : (
-          events.map((event) => (
+          events.map((event, i) => (
             <EventCard
-              key={event.id}
+              key={event.id + "-" + i}
               event={event}
               date={date}
               setIsDragging={setIsDragging}

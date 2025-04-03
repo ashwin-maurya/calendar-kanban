@@ -45,7 +45,7 @@ export default function EventCard({
     <motion.div
       ref={dragRef}
       onClick={() => setSelectedEvent(event.id)}
-      className={`p-3 mb-2 bg-white rounded-md border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing ${
+      className={`p-3 mb-2 bg-white rounded-md border border-[#E3F5D9] ring-[#56ab2f] outline-[#56ab2f] shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing ${
         isDragging ? "opacity-50" : ""
       }`}
       layoutId={`card-${event.id}`}
@@ -70,25 +70,6 @@ export default function EventCard({
             <span className="text-xs text-gray-500">{event.time}</span>
           </motion.div>
         </div>
-        <motion.div
-          className="ml-2 text-gray-400"
-          layoutId={`icon-${event.id}`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 8h16M4 16h16"
-            />
-          </svg>
-        </motion.div>
       </motion.div>
     </motion.div>
   );
