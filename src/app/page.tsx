@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import Calendar from "@/components/Calendar";
 
 export const metadata: Metadata = {
-  title: "Calendar Kanban | Modern Calendar App",
+  title: "Calendar Kanban | Planban",
   description:
-    "A modern calendar application with drag-and-drop functionality, event management, and responsive design.",
+    "A modern calendar application with drag-and-drop functionality for task management",
   keywords: [
     "calendar",
     "kanban",
