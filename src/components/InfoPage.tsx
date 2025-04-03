@@ -79,7 +79,7 @@ export default function InfoPage({ onClose }: InfoPageProps) {
               <ul className="list-disc max-sm:text-sm  pl-6 space-y-2 text-gray-700">
                 <li>
                   On Desktop, Use the arrow buttons in the header to navigate
-                  between weeks
+                  between weeks or use the alt + arrow keys
                 </li>
                 <li>Double-click on the left/right edges to jump a week</li>
                 <li>On mobile, swipe left/right to navigate between days</li>
@@ -99,7 +99,7 @@ export default function InfoPage({ onClose }: InfoPageProps) {
                 <li>Drag and drop events between days to reschedule them</li>
                 <li>
                   Hover over the edges while dragging to navigate to
-                  previous/next days
+                  previous/next days/weeks
                 </li>
               </ul>
             </section>
@@ -109,10 +109,7 @@ export default function InfoPage({ onClose }: InfoPageProps) {
                 Tips & Tricks
               </h2>
               <ul className="list-disc max-sm:text-sm  pl-6 space-y-2 text-gray-700">
-                <li>
-                  Use the ESC key or click outside to close any open modal
-                </li>
-                <li>The calendar automatically adjusts to your screen size</li>
+                <li>Use the ESC key to close any open modal</li>
                 <li>Empty days show a "No events" placeholder</li>
                 <li>Events maintain their order when moved between days</li>
               </ul>

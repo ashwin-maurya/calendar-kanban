@@ -72,7 +72,13 @@ export default function Calendar() {
 
     hoverTimeoutRef.current = setTimeout(() => {
       setCurrentDate((prev) =>
-        direction === "left" ? subWeeks(prev, 1) : addWeeks(prev, 1)
+        direction === "left"
+          ? isMobile
+            ? subDays(prev, 1)
+            : subWeeks(prev, 1)
+          : isMobile
+          ? addDays(prev, 1)
+          : addWeeks(prev, 1)
       );
       clearHoverState();
     }, 1500);
@@ -94,7 +100,7 @@ export default function Calendar() {
         isOverLeft: !!monitor.isOver({ shallow: true }),
       }),
     }),
-    [selectedEvent]
+    [selectedEvent, isMobile]
   );
 
   const [{ isOverRight }, dropRight] = useDrop(
@@ -113,7 +119,7 @@ export default function Calendar() {
         isOverRight: !!monitor.isOver({ shallow: true }),
       }),
     }),
-    [selectedEvent]
+    [selectedEvent, isMobile]
   );
 
   useEffect(() => {
@@ -128,13 +134,13 @@ export default function Calendar() {
 
   const handleLeftDoubleClick = () => {
     if (selectedEvent) return;
-    setCurrentDate((prev) => subWeeks(prev, 1));
+    setCurrentDate((prev) => (isMobile ? subDays(prev, 1) : subWeeks(prev, 1)));
     clearHoverState();
   };
 
   const handleRightDoubleClick = () => {
     if (selectedEvent) return;
-    setCurrentDate((prev) => addWeeks(prev, 1));
+    setCurrentDate((prev) => (isMobile ? addDays(prev, 1) : addWeeks(prev, 1)));
     clearHoverState();
   };
 
