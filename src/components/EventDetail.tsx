@@ -40,7 +40,7 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
 
       <motion.div
         layoutId={`card-${event.id}`}
-        className="fixed inset-0 bg-gradient-to-br from-white to-gray-50 z-50 overflow-hidden"
+        className="fixed inset-0 bg-gradient-to-br from-[#F4FBF0] to-[#FAFDF6] z-50 overflow-hidden"
         transition={{
           layout: {
             type: "spring",
@@ -59,7 +59,7 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ delay: 0.2 }}
             onClick={onClose}
-            className="absolute top-8 right-8 p-3 rounded-full hover:bg-gray-100 transition-colors"
+            className="absolute hover:bg-gray-200 cursor-pointer p-3 rounded-full top-5 right-8 p-3 rounded-full hover:bg-gray-100 transition-colors flex gap-2 items-center bg-[#E3F5D9] backdrop-blur-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -75,6 +75,8 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
+
+            <span className="hidden md:block"> ESC</span>
           </motion.button>
 
           <div className="grid grid-cols-1 md:grid-cols-2 px-1 gap-12 h-full">
@@ -114,14 +116,8 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
                 stiffness: 300,
                 damping: 25,
               }}
-              className="relative h-full min-h-[400px]"
-            >
-              <motion.img
-                src={event.imageUrl}
-                alt={event.title}
-                className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl"
-              />
-            </motion.div>
+              className="relative h-full min-h-[400px] bg-gradient-to-br from-[#348f50] to-[#56b4d3] rounded-2xl shadow-2xl"
+            ></motion.div>
           </div>
         </motion.div>
       </motion.div>

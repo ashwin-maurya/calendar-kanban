@@ -68,7 +68,7 @@ export default function CalendarHeader({
   }, [currentDate]);
 
   return (
-    <header className="bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white">
+    <header className="bg-gradient-to-r fixed top-0 left-0 right-0 z-10 from-[#56ab2f] to-[#a8e063] text-white">
       <div className="flex justify-center md:justify-between items-center p-4">
         {!isMobile && (
           <button onClick={() => setCurrentDate(subWeeks(currentDate, 1))}>
@@ -94,7 +94,7 @@ export default function CalendarHeader({
       </div>
       {isMobile && (
         <motion.div
-          className="flex justify-between px-4 pb-2 relative"
+          className="flex justify-between px-2 sm:px-4 pb-2 relative"
           {...swipeHandlers}
           initial={false}
           animate={{ x: 0 }}
@@ -104,12 +104,12 @@ export default function CalendarHeader({
             <button
               key={day + date}
               onClick={() => setCurrentDate(fullDate)}
-              className={`flex flex-col w-12 h-16 items-center transition-all ${
+              className={`flex flex-col max-xs:w-8 w-12 h-16 items-center transition-all ${
                 isActive
                   ? "bg-white/20 -translate-y-0.5 shadow-lg"
                   : "hover:bg-white/10"
               } rounded-lg px-3 py-1.5 ${
-                isToday ? "text-white font-medium" : "text-white/70"
+                isToday ? "text-white bg-white/10 font-medium" : "text-white/70"
               }`}
             >
               <span className="text-xs font-medium">{day}</span>
