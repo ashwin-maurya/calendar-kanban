@@ -32,8 +32,10 @@ export default function Home() {
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => !isDragging && setCurrentDate(addDays(currentDate, 1)),
-    onSwipedRight: () => !isDragging && setCurrentDate(subDays(currentDate, 1)),
+    onSwipedLeft: () =>
+      !isDragging && !selectedEvent && setCurrentDate(addDays(currentDate, 1)),
+    onSwipedRight: () =>
+      !isDragging && !selectedEvent && setCurrentDate(subDays(currentDate, 1)),
     trackTouch: true,
     preventScrollOnSwipe: true,
   });
@@ -58,6 +60,7 @@ export default function Home() {
   };
 
   const startHoverCheck = (direction: "left" | "right") => {
+    if (selectedEvent) return; // Don't allow hover checks when detail view is open
     clearHoverState();
     setShowLoading(direction);
 
@@ -76,7 +79,11 @@ export default function Home() {
         item: { id: string; fromDate: string },
         monitor: DropTargetMonitor
       ) => {
-        if (monitor.isOver({ shallow: true }) && !hoverTimeoutRef.current) {
+        if (
+          monitor.isOver({ shallow: true }) &&
+          !hoverTimeoutRef.current &&
+          !selectedEvent
+        ) {
           startHoverCheck("left");
         }
       },
@@ -85,7 +92,7 @@ export default function Home() {
         isOverLeft: !!monitor.isOver({ shallow: true }),
       }),
     }),
-    []
+    [selectedEvent]
   );
 
   const [{ isOverRight }, dropRight] = useDrop(
@@ -95,7 +102,11 @@ export default function Home() {
         item: { id: string; fromDate: string },
         monitor: DropTargetMonitor
       ) => {
-        if (monitor.isOver({ shallow: true }) && !hoverTimeoutRef.current) {
+        if (
+          monitor.isOver({ shallow: true }) &&
+          !hoverTimeoutRef.current &&
+          !selectedEvent
+        ) {
           startHoverCheck("right");
         }
       },
@@ -104,7 +115,7 @@ export default function Home() {
         isOverRight: !!monitor.isOver({ shallow: true }),
       }),
     }),
-    []
+    [selectedEvent]
   );
 
   useEffect(() => {
@@ -118,11 +129,13 @@ export default function Home() {
   }, [isOverLeft, isOverRight]);
 
   const handleLeftDoubleClick = () => {
+    if (selectedEvent) return; // Don't allow navigation when detail view is open
     setCurrentDate((prev) => subWeeks(prev, 1));
     clearHoverState();
   };
 
   const handleRightDoubleClick = () => {
+    if (selectedEvent) return; // Don't allow navigation when detail view is open
     setCurrentDate((prev) => addWeeks(prev, 1));
     clearHoverState();
   };
@@ -161,6 +174,8 @@ export default function Home() {
                 events={events[format(day, "yyyy-MM-dd")] || []}
                 setEvents={setEvents}
                 setIsDragging={setIsDragging}
+                selectedEvent={selectedEvent}
+                setSelectedEvent={setSelectedEvent}
               />
             ))}
           </div>

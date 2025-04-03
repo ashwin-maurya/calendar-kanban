@@ -11,6 +11,8 @@ interface DayColumnProps {
   events: Event[];
   setEvents: (events: EventsByDate) => void;
   setIsDragging: (dragging: boolean) => void;
+  selectedEvent: string | null;
+  setSelectedEvent: (eventId: string | null) => void;
 }
 
 export default function DayColumn({
@@ -18,6 +20,8 @@ export default function DayColumn({
   events,
   setEvents,
   setIsDragging,
+  selectedEvent,
+  setSelectedEvent,
 }: DayColumnProps) {
   const moveEvent = (eventId: string, fromDate: string, toDate: string) => {
     setEvents((prev: EventsByDate) => {
@@ -72,6 +76,8 @@ export default function DayColumn({
               event={event}
               date={date}
               setIsDragging={setIsDragging}
+              selectedEvent={selectedEvent}
+              setSelectedEvent={setSelectedEvent}
             />
           ))
         )}
