@@ -31,9 +31,12 @@ export default function DayColumn({
       const event = updated[fromDate]?.find((e) => e.id === eventId);
       if (!event) return prev;
       updated[fromDate] = updated[fromDate].filter((e) => e.id !== eventId);
-      updated[toDate] = [...(updated[toDate] || []), event].sort((a, b) =>
-        a.time.localeCompare(b.time)
-      );
+      updated[toDate] = [...(updated[toDate] || []), event].sort((a, b) => {
+        // Convert time to 24-hour format for comparison
+        const timeA = new Date(`1970/01/01 ${a.time}`);
+        const timeB = new Date(`1970/01/01 ${b.time}`);
+        return timeA.getTime() - timeB.getTime();
+      });
       if (!updated[fromDate].length) delete updated[fromDate];
       return updated;
     });
@@ -63,7 +66,7 @@ export default function DayColumn({
     <div
       ref={dropRef}
       data-date={format(date, "yyyy-MM-dd")}
-      className={`flex flex-col h-full bg-white rounded-lg shadow-sm border border-[#E3F5D9] transition-all duration-300 w-full ${
+      className={`flex flex-col h-full bg-[#F4FBF0] rounded-lg shadow-sm border border-[#E3F5D9] transition-all duration-300 w-full ${
         isOver ? "ring-2 ring-[#56ab2f]" : ""
       }`}
     >

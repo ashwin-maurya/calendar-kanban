@@ -79,7 +79,7 @@ export default function InfoPage({ onClose }: InfoPageProps) {
               <ul className="list-disc max-sm:text-sm  pl-6 space-y-2 text-gray-700">
                 <li>
                   On Desktop, Use the arrow buttons in the header to navigate
-                  between weeks or use the alt + arrow keys
+                  between weeks or use the ctrl + arrow keys
                 </li>
                 <li>Double-click on the left/right edges to jump a week</li>
                 <li>On mobile, swipe left/right to navigate between days</li>

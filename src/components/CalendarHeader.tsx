@@ -56,7 +56,6 @@ export default function CalendarHeader({
     delta: 50,
   });
 
-  // Update visible week when active date changes to a different week
   useEffect(() => {
     const currentWeekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
     if (
@@ -67,12 +66,11 @@ export default function CalendarHeader({
     }
   }, [currentDate]);
 
-  // Add keyboard navigation for desktop
   useEffect(() => {
     if (isMobile) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.altKey) {
+      if (e.ctrlKey) {
         if (e.key === "ArrowLeft") {
           setCurrentDate(subWeeks(currentDate, 1));
         } else if (e.key === "ArrowRight") {
