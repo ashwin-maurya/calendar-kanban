@@ -67,11 +67,32 @@ export default function CalendarHeader({
     }
   }, [currentDate]);
 
+  // Add keyboard navigation for desktop
+  useEffect(() => {
+    if (isMobile) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey) {
+        if (e.key === "ArrowLeft") {
+          setCurrentDate(subWeeks(currentDate, 1));
+        } else if (e.key === "ArrowRight") {
+          setCurrentDate(addWeeks(currentDate, 1));
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentDate, isMobile, setCurrentDate]);
+
   return (
     <header className="bg-gradient-to-r fixed top-0 left-0 right-0 z-10 from-[#56ab2f] to-[#a8e063] text-white">
       <div className="flex justify-center md:justify-between items-center p-4">
         {!isMobile && (
-          <button onClick={() => setCurrentDate(subWeeks(currentDate, 1))}>
+          <button
+            className="cursor-pointer"
+            onClick={() => setCurrentDate(subWeeks(currentDate, 1))}
+          >
             <CircleChevronLeft />
           </button>
         )}
@@ -87,7 +108,10 @@ export default function CalendarHeader({
           </motion.h1>
         </AnimatePresence>
         {!isMobile && (
-          <button onClick={() => setCurrentDate(addWeeks(currentDate, 1))}>
+          <button
+            className="cursor-pointer"
+            onClick={() => setCurrentDate(addWeeks(currentDate, 1))}
+          >
             <CircleChevronRight />
           </button>
         )}
@@ -104,7 +128,7 @@ export default function CalendarHeader({
             <button
               key={day + date}
               onClick={() => setCurrentDate(fullDate)}
-              className={`flex flex-col max-xs:w-6 w-10 h-16 items-center transition-all ${
+              className={`flex flex-col max-xs:w-8 w-12 h-16 items-center transition-all ${
                 isActive
                   ? "bg-white/20 -translate-y-0.5 shadow-lg"
                   : "hover:bg-white/10"
