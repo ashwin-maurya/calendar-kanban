@@ -6,7 +6,7 @@ const eventsData: EventsByDate = {
       id: "event-1",
       title: "Coffee with Alex",
       description:
-        "Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch. Meet with Alex to brainstorm ideas for the upcoming product launch",
+        "Meet with Alex to brainstorm ideas for the upcoming product launch. ",
       imageUrl: "https://loremflickr.com/200/200?random=1",
       time: "09:00 AM",
     },

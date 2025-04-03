@@ -1,15 +1,17 @@
 "use client";
 
-import { useDrop } from "react-dnd";
-import type { DropTargetMonitor } from "react-dnd";
+import { useDrop } from "react-dnd/dist/hooks";
+import type { DropTargetMonitor } from "react-dnd/dist/types";
 import { format } from "date-fns";
 import EventCard from "./EventCard";
 import { Event, EventsByDate } from "@/lib/types";
+import { useCallback } from "react";
+import type { SetStateAction } from "react";
 
 interface DayColumnProps {
   date: Date;
   events: Event[];
-  setEvents: (events: EventsByDate) => void;
+  setEvents: (value: SetStateAction<EventsByDate>) => void;
   setIsDragging: (dragging: boolean) => void;
   selectedEvent: string | null;
   setSelectedEvent: (eventId: string | null) => void;
@@ -50,11 +52,18 @@ export default function DayColumn({
     }),
   }));
 
+  const dropRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node) drop(node);
+    },
+    [drop]
+  );
+
   return (
     <div
-      ref={drop}
+      ref={dropRef}
       data-date={format(date, "yyyy-MM-dd")}
-      className={`flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200 transition-all duration-300 ${
+      className={`flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-200 transition-all duration-300 w-full ${
         isOver ? "ring-2 ring-blue-400" : ""
       }`}
     >
@@ -64,7 +73,7 @@ export default function DayColumn({
         </h2>
         <p className="text-xs text-gray-500">{format(date, "MMM d")}</p>
       </div>
-      <div className="flex-1 p-2 min-h-[200px] overflow-y-auto">
+      <div className="flex-1 p-2 min-h-[200px] overflow-y-auto overflow-x-hidden">
         {events.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <p className="text-xs text-gray-400">No events</p>

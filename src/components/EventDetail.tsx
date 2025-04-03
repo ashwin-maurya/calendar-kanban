@@ -17,10 +17,7 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
       }
     };
 
-    if (window.innerWidth < 768) {
-      document.body.style.overflow = "hidden";
-    }
-
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleEscape);
 
     return () => {
@@ -36,79 +33,97 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.3 }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/50 z-40 md:hidden"
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
       />
 
       <motion.div
-        key="content"
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
+        layoutId={`card-${event.id}`}
+        className="fixed inset-0 bg-gradient-to-br from-white to-gray-50 z-50 overflow-hidden"
         transition={{
-          type: "spring",
-          damping: 25,
-          stiffness: 300,
-          exit: { duration: 0.3 },
+          layout: {
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+          },
         }}
-        className="fixed inset-x-0 bottom-0 bg-white rounded-t-2xl z-50
-                 md:inset-0 md:rounded-none md:h-screen"
       >
-        <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto my-4 mb-10 md:hidden" />
-
-        <div className="h-[85vh] md:h-screen overflow-y-auto px-4 pb-4">
+        <motion.div
+          layoutId={`content-${event.id}`}
+          className="relative max-w-5xl mx-auto h-full p-8 pt-20"
+        >
           <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             transition={{ delay: 0.2 }}
             onClick={onClose}
-            className="absolute top-4 right-4 bg-gray-200 p-2 rounded"
+            className="absolute top-8 right-8 p-3 rounded-full hover:bg-gray-100 transition-colors"
           >
-            Esc
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </motion.button>
 
-          <motion.h2
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-xl font-bold"
-          >
-            {event.title}
-          </motion.h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 px-1 gap-12 h-full">
+            <div className="space-y-6">
+              <motion.h2
+                layoutId={`title-${event.id}`}
+                className="text-4xl font-bold"
+              >
+                {event.title}
+              </motion.h2>
 
-          <motion.p
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ delay: 0.15 }}
-            className="text-sm text-gray-600"
-          >
-            {event.time}
-          </motion.p>
+              <motion.div
+                layoutId={`time-${event.id}`}
+                className="text-xl text-gray-600"
+              >
+                {event.time}
+              </motion.div>
 
-          <motion.p
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-2"
-          >
-            {event.description}
-          </motion.p>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ delay: 0.3 }}
+                className="text-lg text-gray-700 leading-relaxed"
+              >
+                {event.description}
+              </motion.p>
+            </div>
 
-          <motion.img
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ delay: 0.25 }}
-            src={event.imageUrl}
-            alt={event.title}
-            className="w-full md:w-1/2 max-h-[500px] object-cover h-auto mt-4 rounded"
-          />
-        </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{
+                delay: 0.2,
+                type: "spring",
+                stiffness: 300,
+                damping: 25,
+              }}
+              className="relative h-full min-h-[400px]"
+            >
+              <motion.img
+                src={event.imageUrl}
+                alt={event.title}
+                className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl"
+              />
+            </motion.div>
+          </div>
+        </motion.div>
       </motion.div>
     </AnimatePresence>
   );

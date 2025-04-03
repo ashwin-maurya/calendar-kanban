@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
-import { useDrop } from "react-dnd";
-import type { DropTargetMonitor } from "react-dnd";
+import { useDrop } from "react-dnd/dist/hooks";
+import type { DropTargetMonitor } from "react-dnd/dist/types";
 import CalendarHeader from "@/components/CalendarHeader";
 import DayColumn from "@/components/DayColumn";
 import EventDetail from "@/components/EventDetail";
@@ -129,19 +129,33 @@ export default function Home() {
   }, [isOverLeft, isOverRight]);
 
   const handleLeftDoubleClick = () => {
-    if (selectedEvent) return; // Don't allow navigation when detail view is open
+    if (selectedEvent) return;
     setCurrentDate((prev) => subWeeks(prev, 1));
     clearHoverState();
   };
 
   const handleRightDoubleClick = () => {
-    if (selectedEvent) return; // Don't allow navigation when detail view is open
+    if (selectedEvent) return;
     setCurrentDate((prev) => addWeeks(prev, 1));
     clearHoverState();
   };
 
+  const dropLeftRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node) dropLeft(node);
+    },
+    [dropLeft]
+  );
+
+  const dropRightRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node) dropRight(node);
+    },
+    [dropRight]
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f6f8ff] to-[#eef1f9] text-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-[#f6f8ff] to-[#eef1f9] text-gray-800 overflow-x-hidden">
       <CalendarHeader
         isMobile={isMobile}
         currentDate={currentDate}
@@ -149,23 +163,26 @@ export default function Home() {
       />
       <main
         {...(isMobile ? swipeHandlers : {})}
-        className="mx-auto h-[calc(100vh)] py-6"
+        className="mx-auto h-[calc(100vh)] py-6 overflow-hidden"
       >
         <AnimatePresence>
           {showLoading && <LoadingIndicator direction={showLoading} />}
         </AnimatePresence>
-        <div className="relative flex h-[calc(100vh-12rem)]">
+        <div className="relative flex h-[calc(100vh-12rem)] overflow-hidden">
           <div
-            ref={dropLeft}
+            ref={dropLeftRef}
             data-zone="left"
             className={`${
               isMobile ? "w-[10%]" : "w-[10%]"
             } h-full flex items-center justify-center transition-colors duration-200 select-none`}
+            onClick={
+              isMobile ? () => setSelectedEvent(null) : handleLeftDoubleClick
+            }
           />
           <div
             className={`${
               isMobile ? "w-[80%]" : "w-[80%]"
-            } grid grid-cols-1 md:grid-cols-7 gap-6`}
+            } grid grid-cols-1 md:grid-cols-7 gap-6 overflow-hidden`}
           >
             {(isMobile ? [currentDate] : days).map((day) => (
               <DayColumn
@@ -180,11 +197,14 @@ export default function Home() {
             ))}
           </div>
           <div
-            ref={dropRight}
+            ref={dropRightRef}
             data-zone="right"
             className={`${
               isMobile ? "w-[10%]" : "w-[10%]"
             } h-full flex items-center justify-center transition-colors duration-200 select-none`}
+            onClick={
+              isMobile ? () => setSelectedEvent(null) : handleRightDoubleClick
+            }
           />
         </div>
       </main>
