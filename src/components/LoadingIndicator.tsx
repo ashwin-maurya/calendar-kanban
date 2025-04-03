@@ -15,11 +15,11 @@ export default function LoadingIndicator({ direction }: LoadingIndicatorProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className={`fixed top-1/2 ${
-        direction === "left" ? "left-4" : "right-4"
+        direction === "left" ? "left-2" : "right-2"
       } transform -translate-y-1/2 z-50`}
     >
-      <div className="flex flex-col items-center space-y-2 bg-white/90 backdrop-blur-sm p-3 rounded-full">
-        <div className="relative w-12 h-12">
+      <div className="flex flex-col items-center space-y-2 bg-white/95 backdrop-blur-sm p-4 rounded-full shadow-lg">
+        <div className="relative w-16 h-16">
           <svg className="w-full h-full" viewBox="0 0 100 100">
             <circle
               cx="50"
@@ -56,6 +56,14 @@ export default function LoadingIndicator({ direction }: LoadingIndicatorProps) {
             />
           </motion.svg>
         </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="text-sm font-medium text-gray-700"
+        >
+          {direction === "left" ? "Previous Day" : "Next Day"}
+        </motion.div>
       </div>
     </motion.div>
   );

@@ -5,11 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CircleChevronLeft, CircleChevronRight } from "lucide-react";
 
 interface CalendarHeaderProps {
+  isMobile: boolean;
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
 }
 
 export default function CalendarHeader({
+  isMobile,
   currentDate,
   setCurrentDate,
 }: CalendarHeaderProps) {
@@ -18,10 +20,12 @@ export default function CalendarHeader({
 
   return (
     <header className="p-4 bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white">
-      <div className="flex justify-between items-center">
-        <button onClick={() => setCurrentDate(subWeeks(currentDate, 1))}>
-          <CircleChevronLeft />
-        </button>
+      <div className="flex justify-center md:justify-between items-center">
+        {!isMobile && (
+          <button onClick={() => setCurrentDate(subWeeks(currentDate, 1))}>
+            <CircleChevronLeft />
+          </button>
+        )}
         <AnimatePresence mode="wait">
           <motion.h1
             key={weekStart}
@@ -30,12 +34,14 @@ export default function CalendarHeader({
             exit={{ opacity: 0, y: 10 }}
             className="text-lg font-semibold"
           >
-            {`${weekStart} - ${weekEnd}`}
+            {`${weekStart} ${isMobile ? "" : " - " + weekEnd}`}
           </motion.h1>
         </AnimatePresence>
-        <button onClick={() => setCurrentDate(addWeeks(currentDate, 1))}>
-          <CircleChevronRight />
-        </button>
+        {!isMobile && (
+          <button onClick={() => setCurrentDate(addWeeks(currentDate, 1))}>
+            <CircleChevronRight />
+          </button>
+        )}
       </div>
     </header>
   );

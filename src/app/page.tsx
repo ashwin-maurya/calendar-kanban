@@ -38,7 +38,16 @@ export default function Home() {
     preventScrollOnSwipe: true,
   });
 
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(typeof window !== "undefined" && window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const clearHoverState = () => {
     if (hoverTimeoutRef.current) {
@@ -54,7 +63,7 @@ export default function Home() {
 
     hoverTimeoutRef.current = setTimeout(() => {
       setCurrentDate((prev) =>
-        direction === "left" ? subWeeks(prev, 1) : addWeeks(prev, 1)
+        direction === "left" ? subDays(prev, 1) : addDays(prev, 1)
       );
       clearHoverState();
     }, 1500);
@@ -107,6 +116,7 @@ export default function Home() {
       clearHoverState();
     }
   }, [isOverLeft, isOverRight]);
+
   const handleLeftDoubleClick = () => {
     setCurrentDate((prev) => subWeeks(prev, 1));
     clearHoverState();
@@ -120,10 +130,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f6f8ff] to-[#eef1f9] text-gray-800">
       <CalendarHeader
+        isMobile={isMobile}
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}
       />
-      <main {...(isMobile ? swipeHandlers : {})} className="mx-auto px-4 py-6">
+      <main
+        {...(isMobile ? swipeHandlers : {})}
+        className="mx-auto h-[calc(100vh)] py-6"
+      >
         <AnimatePresence>
           {showLoading && <LoadingIndicator direction={showLoading} />}
         </AnimatePresence>
@@ -131,10 +145,15 @@ export default function Home() {
           <div
             ref={dropLeft}
             data-zone="left"
-            className={`w-[10%] h-full flex items-center justify-center transition-colors duration-200 select-none`}
-            onDoubleClick={handleLeftDoubleClick}
+            className={`${
+              isMobile ? "w-[10%]" : "w-[10%]"
+            } h-full flex items-center justify-center transition-colors duration-200 select-none`}
           />
-          <div className="w-[80%] grid grid-cols-1 md:grid-cols-7 gap-6">
+          <div
+            className={`${
+              isMobile ? "w-[80%]" : "w-[80%]"
+            } grid grid-cols-1 md:grid-cols-7 gap-6`}
+          >
             {(isMobile ? [currentDate] : days).map((day) => (
               <DayColumn
                 key={day.toISOString()}
@@ -148,8 +167,9 @@ export default function Home() {
           <div
             ref={dropRight}
             data-zone="right"
-            className={`w-[10%] h-full flex items-center justify-center transition-colors duration-200 select-none`}
-            onDoubleClick={handleRightDoubleClick}
+            className={`${
+              isMobile ? "w-[10%]" : "w-[10%]"
+            } h-full flex items-center justify-center transition-colors duration-200 select-none`}
           />
         </div>
       </main>
