@@ -104,7 +104,7 @@ export default function CalendarHeader({
             <button
               key={day + date}
               onClick={() => setCurrentDate(fullDate)}
-              className={`flex flex-col max-xs:w-8 w-12 h-16 items-center transition-all ${
+              className={`flex flex-col max-xs:w-6 w-10 h-16 items-center transition-all ${
                 isActive
                   ? "bg-white/20 -translate-y-0.5 shadow-lg"
                   : "hover:bg-white/10"
