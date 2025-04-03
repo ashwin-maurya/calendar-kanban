@@ -2,10 +2,14 @@ import { motion } from "framer-motion";
 
 interface LoadingIndicatorProps {
   direction: "left" | "right";
+  isMobile: boolean;
 }
 
-export default function LoadingIndicator({ direction }: LoadingIndicatorProps) {
-  const radius = 45;
+export default function LoadingIndicator({
+  direction,
+  isMobile,
+}: LoadingIndicatorProps) {
+  const radius = isMobile ? 35 : 45;
   const circumference = 2 * Math.PI * radius;
 
   return (
@@ -15,11 +19,11 @@ export default function LoadingIndicator({ direction }: LoadingIndicatorProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className={`fixed top-1/2 ${
-        direction === "left" ? "left-2" : "right-2"
+        direction === "left" ? "left-1 md:left-2" : "right-1 md:right-2"
       } transform -translate-y-1/2 z-50`}
     >
-      <div className="flex flex-col items-center space-y-2 bg-white/95 backdrop-blur-sm p-4 rounded-full shadow-lg">
-        <div className="relative w-16 h-16">
+      <div className="flex flex-col items-center space-y-1 md:space-y-2 bg-white/95 backdrop-blur-sm p-2 md:p-4 rounded-full shadow-lg">
+        <div className="relative w-12 h-12 md:w-16 md:h-16">
           <svg className="w-full h-full" viewBox="0 0 100 100">
             <circle
               cx="50"
@@ -27,7 +31,7 @@ export default function LoadingIndicator({ direction }: LoadingIndicatorProps) {
               r={radius}
               fill="none"
               stroke="#E5E7EB"
-              strokeWidth="8"
+              strokeWidth={isMobile ? 10 : 8}
             />
           </svg>
 
@@ -44,7 +48,7 @@ export default function LoadingIndicator({ direction }: LoadingIndicatorProps) {
               r={radius}
               fill="none"
               stroke="#3B82F6"
-              strokeWidth="8"
+              strokeWidth={isMobile ? 10 : 6}
               strokeDasharray={circumference}
               initial={{
                 strokeDashoffset: direction === "right" ? circumference : 0,
@@ -56,14 +60,6 @@ export default function LoadingIndicator({ direction }: LoadingIndicatorProps) {
             />
           </motion.svg>
         </div>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-sm font-medium text-gray-700"
-        >
-          {direction === "left" ? "Previous Day" : "Next Day"}
-        </motion.div>
       </div>
     </motion.div>
   );
