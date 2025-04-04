@@ -1,9 +1,9 @@
 "use client";
 
 import { useDrag } from "react-dnd/dist/hooks";
-import { motion, LayoutGroup } from "framer-motion";
+import { motion, LayoutGroup, usePresence } from "framer-motion";
 import { Event } from "@/lib/types";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { format } from "date-fns";
 
 interface EventCardProps {
@@ -12,6 +12,7 @@ interface EventCardProps {
   setIsDragging: (dragging: boolean) => void;
   selectedEvent: string | null;
   setSelectedEvent: (eventId: string | null) => void;
+  isNew?: boolean;
 }
 
 export default function EventCard({
@@ -20,6 +21,7 @@ export default function EventCard({
   setIsDragging,
   selectedEvent,
   setSelectedEvent,
+  isNew = false,
 }: EventCardProps) {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "EVENT",
@@ -30,9 +32,22 @@ export default function EventCard({
     end: () => setIsDragging(false),
   }));
 
+  const [isPresent, safeToRemove] = usePresence();
+  const [shouldAnimate, setShouldAnimate] = useState(!isNew);
+
   useEffect(() => {
     setIsDragging(isDragging);
   }, [isDragging, setIsDragging]);
+
+  useEffect(() => {
+    // Enable animations after initial render for new cards
+    if (isNew) {
+      const timer = setTimeout(() => {
+        setShouldAnimate(true);
+      }, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [isNew]);
 
   const dragRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -47,25 +62,30 @@ export default function EventCard({
       onClick={() => setSelectedEvent(event.id)}
       className={`p-3 mb-2 bg-white rounded-md border border-[#E3F5D9] ring-[#56ab2f] outline-[#56ab2f] shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing ${
         isDragging ? "opacity-50" : ""
-      }`}
-      layoutId={`card-${event.id}`}
+      } ${isNew ? "relative" : ""}`}
+      layoutId={shouldAnimate ? `card-${event.id}` : undefined}
+      initial={isNew ? { opacity: 0, scale: 0.8 } : false}
+      animate={isNew ? { opacity: 1, scale: 1 } : undefined}
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
+      transition={
+        isNew ? { type: "spring", stiffness: 500, damping: 25 } : undefined
+      }
     >
       <motion.div
         className="flex items-start justify-between"
-        layoutId={`content-${event.id}`}
+        layoutId={shouldAnimate ? `content-${event.id}` : undefined}
       >
         <div className="flex-1">
           <motion.h3
             className="text-sm font-medium text-gray-900"
-            layoutId={`title-${event.id}`}
+            layoutId={shouldAnimate ? `title-${event.id}` : undefined}
           >
             {event.title}
           </motion.h3>
           <motion.div
             className="mt-1 flex items-center"
-            layoutId={`time-${event.id}`}
+            layoutId={shouldAnimate ? `time-${event.id}` : undefined}
           >
             <span className="text-xs text-gray-500">{event.time}</span>
           </motion.div>

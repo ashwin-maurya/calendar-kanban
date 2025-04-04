@@ -5,7 +5,7 @@ import type { DropTargetMonitor } from "react-dnd/dist/types";
 import { format } from "date-fns";
 import EventCard from "./EventCard";
 import { Event, EventsByDate } from "@/lib/types";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import type { SetStateAction } from "react";
 
 interface DayColumnProps {
@@ -25,6 +25,8 @@ export default function DayColumn({
   selectedEvent,
   setSelectedEvent,
 }: DayColumnProps) {
+  const [newEvents, setNewEvents] = useState<Set<string>>(new Set());
+
   const moveEvent = (eventId: string, fromDate: string, toDate: string) => {
     setEvents((prev: EventsByDate) => {
       const updated: { [key: string]: Event[] } = { ...prev };
@@ -38,6 +40,21 @@ export default function DayColumn({
         return timeA.getTime() - timeB.getTime();
       });
       if (!updated[fromDate].length) delete updated[fromDate];
+      return updated;
+    });
+
+    // Mark this event as newly added to this column
+    setNewEvents((prev) => {
+      const updated = new Set(prev);
+      updated.add(eventId);
+      // Remove the marker after animation completes
+      setTimeout(() => {
+        setNewEvents((prev) => {
+          const updated = new Set(prev);
+          updated.delete(eventId);
+          return updated;
+        });
+      }, 500);
       return updated;
     });
   };
@@ -90,6 +107,7 @@ export default function DayColumn({
               setIsDragging={setIsDragging}
               selectedEvent={selectedEvent}
               setSelectedEvent={setSelectedEvent}
+              isNew={newEvents.has(event.id)}
             />
           ))
         )}
