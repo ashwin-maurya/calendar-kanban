@@ -19,7 +19,13 @@ import {
   addWeeks,
   subWeeks,
 } from "date-fns";
-import { AnimatePresence } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useTransform,
+  useAnimation,
+} from "framer-motion";
 import { CircleHelp } from "lucide-react";
 
 export default function Calendar() {
@@ -29,15 +35,64 @@ export default function Calendar() {
   const [showInfo, setShowInfo] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showLoading, setShowLoading] = useState<"left" | "right" | null>(null);
+  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
+    null
+  );
+  const [isSwiping, setIsSwiping] = useState(false);
+  const [swipeProgress, setSwipeProgress] = useState(0);
+  const [swipeOpacity, setSwipeOpacity] = useState(1);
+  const [isWeekTransition, setIsWeekTransition] = useState(false);
+  const [weekTransitionDirection, setWeekTransitionDirection] = useState<
+    "left" | "right" | null
+  >(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
+  const controls = useAnimation();
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
+  const x = useMotionValue(0);
+
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => !isDragging && setCurrentDate(addDays(currentDate, 1)),
-    onSwipedRight: () => !isDragging && setCurrentDate(subDays(currentDate, 1)),
+    onSwiping: (e) => {
+      if (!isDragging) {
+        setIsSwiping(true);
+        const delta = e.deltaX;
+        setSwipeProgress(delta);
+        x.set(delta);
+
+        const absDelta = Math.abs(delta);
+        const newOpacity = Math.max(0.5, 1 - absDelta / 200);
+        setSwipeOpacity(newOpacity);
+      }
+    },
+    onSwipedLeft: () => {
+      if (!isDragging) {
+        setSlideDirection("right");
+        setCurrentDate(addDays(currentDate, 1));
+        setIsSwiping(false);
+        setSwipeProgress(0);
+        setSwipeOpacity(1);
+        x.set(0);
+      }
+    },
+    onSwipedRight: () => {
+      if (!isDragging) {
+        setSlideDirection("left");
+        setCurrentDate(subDays(currentDate, 1));
+        setIsSwiping(false);
+        setSwipeProgress(0);
+        setSwipeOpacity(1);
+        x.set(0);
+      }
+    },
+    onTouchEndOrOnMouseUp: () => {
+      setIsSwiping(false);
+      setSwipeProgress(0);
+      setSwipeOpacity(1);
+      x.set(0);
+    },
     trackTouch: true,
     preventScrollOnSwipe: true,
     trackMouse: true,
@@ -71,6 +126,8 @@ export default function Calendar() {
     setShowLoading(direction);
 
     hoverTimeoutRef.current = setTimeout(() => {
+      setWeekTransitionDirection(direction);
+      setIsWeekTransition(true);
       setCurrentDate((prev) =>
         direction === "left"
           ? isMobile
@@ -81,6 +138,11 @@ export default function Calendar() {
           : addWeeks(prev, 1)
       );
       clearHoverState();
+
+      setTimeout(() => {
+        setIsWeekTransition(false);
+        setWeekTransitionDirection(null);
+      }, 500);
     }, 1500);
   };
 
@@ -134,14 +196,28 @@ export default function Calendar() {
 
   const handleLeftDoubleClick = () => {
     if (selectedEvent) return;
+    setWeekTransitionDirection("left");
+    setIsWeekTransition(true);
     setCurrentDate((prev) => (isMobile ? subDays(prev, 1) : subWeeks(prev, 1)));
     clearHoverState();
+
+    setTimeout(() => {
+      setIsWeekTransition(false);
+      setWeekTransitionDirection(null);
+    }, 500);
   };
 
   const handleRightDoubleClick = () => {
     if (selectedEvent) return;
+    setWeekTransitionDirection("right");
+    setIsWeekTransition(true);
     setCurrentDate((prev) => (isMobile ? addDays(prev, 1) : addWeeks(prev, 1)));
     clearHoverState();
+
+    setTimeout(() => {
+      setIsWeekTransition(false);
+      setWeekTransitionDirection(null);
+    }, 500);
   };
 
   const dropLeftRef = useCallback(
@@ -158,12 +234,23 @@ export default function Calendar() {
     [dropRight]
   );
 
+  const handleWeekTransition = (direction: "left" | "right") => {
+    setWeekTransitionDirection(direction);
+    setIsWeekTransition(true);
+
+    setTimeout(() => {
+      setIsWeekTransition(false);
+      setWeekTransitionDirection(null);
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen h-[100vh] overflow-hidden bg-gradient-to-br from-[#F4FBF0] to-[#FAFDF6] text-gray-800 overflow-x-hidden">
       <CalendarHeader
         isMobile={isMobile}
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}
+        onWeekTransition={handleWeekTransition}
       />
       <div className="mt-[130px] md:mt-[80px]"></div>
       <main
@@ -194,17 +281,64 @@ export default function Calendar() {
               isMobile ? "w-[80%]" : "w-[80%]"
             } grid grid-cols-1 md:grid-cols-7 gap-6 overflow-hidden p-1 md:py-2`}
           >
-            {(isMobile ? [currentDate] : days).map((day) => (
-              <DayColumn
-                key={day.toISOString()}
-                date={day}
-                events={events[format(day, "yyyy-MM-dd")] || []}
-                setEvents={setEvents}
-                setIsDragging={setIsDragging}
-                selectedEvent={selectedEvent}
-                setSelectedEvent={setSelectedEvent}
-              />
-            ))}
+            <AnimatePresence mode="wait">
+              {(isMobile ? [currentDate] : days).map((day) => (
+                <motion.div
+                  key={day.toISOString()}
+                  initial={
+                    (isMobile && !isSwiping) || isWeekTransition
+                      ? {
+                          x:
+                            slideDirection === "left" ||
+                            weekTransitionDirection === "left"
+                              ? -100
+                              : 100,
+                          opacity: 0.5,
+                        }
+                      : {}
+                  }
+                  animate={
+                    isSwiping
+                      ? {
+                          x: swipeProgress,
+                          opacity: swipeOpacity,
+                        }
+                      : {
+                          x: 0,
+                          opacity: 1,
+                        }
+                  }
+                  exit={
+                    (isMobile && !isSwiping) || isWeekTransition
+                      ? {
+                          x:
+                            slideDirection === "left" ||
+                            weekTransitionDirection === "left"
+                              ? 100
+                              : -100,
+                          opacity: 0.5,
+                        }
+                      : {}
+                  }
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 40,
+                    mass: 0.5,
+                  }}
+                  className={isMobile ? "w-full" : ""}
+                >
+                  <DayColumn
+                    date={day}
+                    events={events[format(day, "yyyy-MM-dd")] || []}
+                    setEvents={setEvents}
+                    setIsDragging={setIsDragging}
+                    selectedEvent={selectedEvent}
+                    setSelectedEvent={setSelectedEvent}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
           <div
             ref={dropRightRef}

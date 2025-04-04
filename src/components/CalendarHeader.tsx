@@ -17,6 +17,7 @@ interface CalendarHeaderProps {
   isMobile: boolean;
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
+  onWeekTransition?: (direction: "left" | "right") => void;
 }
 
 export default function CalendarHeader({
