@@ -244,6 +244,12 @@ export default function Calendar() {
     }, 500);
   };
 
+  useEffect(() => {
+    if (isDragging) {
+      setSelectedEvent(null);
+    }
+  }, [isDragging]);
+
   return (
     <div className="min-h-screen h-[100vh] overflow-hidden bg-gradient-to-br from-[#F4FBF0] to-[#FAFDF6] text-gray-800 overflow-x-hidden">
       <CalendarHeader
