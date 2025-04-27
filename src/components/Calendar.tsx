@@ -10,7 +10,7 @@ import EventDetail from "@/components/EventDetail";
 import InfoPage from "@/components/InfoPage";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import eventsData from "@/data/event";
-import { EventsByDate } from "@/lib/types";
+import { EventsByDate, Event } from "@/lib/types";
 import {
   format,
   startOfWeek,
@@ -23,10 +23,9 @@ import {
   AnimatePresence,
   motion,
   useMotionValue,
-  useTransform,
-  useAnimation,
 } from "framer-motion";
 import { CircleHelp } from "lucide-react";
+import AddEventButton from "./AddEventButton";
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -47,7 +46,13 @@ export default function Calendar() {
   >(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
-  const controls = useAnimation();
+
+  const handleAddEvent = (event: Event, date: string) => {
+    setEvents((prevEvents) => ({
+      ...prevEvents,
+      [date]: [...(prevEvents[date] || []), event],
+    }));
+  };
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -370,9 +375,11 @@ export default function Calendar() {
       )}
       {showInfo && <InfoPage onClose={() => setShowInfo(false)} />}
 
+      <AddEventButton onAddEvent={handleAddEvent} />
+
       <button
         onClick={() => setShowInfo(true)}
-        className="fixed bottom-6 right-6 p-3 bg-[#56ab2f] rounded-full shadow-lg hover:shadow-xl transition-shadow z-30 flex items-center justify-center group cursor-pointer outline-none"
+        className="fixed bottom-6 left-6 p-3 bg-[#56ab2f] rounded-full shadow-lg hover:shadow-xl transition-shadow z-30 flex items-center justify-center group cursor-pointer outline-none"
       >
         <CircleHelp color="white" />
       </button>

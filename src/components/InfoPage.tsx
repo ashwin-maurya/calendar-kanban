@@ -48,7 +48,7 @@ export default function InfoPage({ onClose }: InfoPageProps) {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ delay: 0.2 }}
             onClick={onClose}
-            className="absolute hover:bg-gray-200 cursor-pointer p-3 rounded-full top-5 right-8 p-3 rounded-full hover:bg-gray-100 transition-colors flex gap-2 items-center bg-[#E3F5D9] backdrop-blur-sm"
+            className="absolute cursor-pointer top-5 right-8 p-3 rounded-full hover:bg-gray-100 transition-colors flex gap-2 items-center bg-[#E3F5D9] backdrop-blur-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +110,7 @@ export default function InfoPage({ onClose }: InfoPageProps) {
               </h2>
               <ul className="list-disc max-sm:text-sm  pl-6 space-y-2 text-gray-700">
                 <li>Use the ESC key to close any open modal</li>
-                <li>Empty days show a "No events" placeholder</li>
+                <li>Empty days show a &quot;No events&quot; placeholder</li>
                 <li>Events maintain their order when moved between days</li>
               </ul>
             </section>
